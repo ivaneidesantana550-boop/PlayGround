@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#101510" />
+  <link rel="icon" href="./favicon.ico" sizes="any" />
+  <title>GRAU EXTREMO BR — As ruas são suas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700;800;900&family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="./styles.css" />
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js"}}
+  </script>
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="game-canvas" aria-label="Cidade 3D de GRAU EXTREMO BR"></canvas>
+    <div class="vignette"></div>
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Grau Extremo BR">
+        <span class="brand-mark">GX<span>BR</span></span>
+        <span class="brand-copy"><b>GRAU EXTREMO</b><small>BRASIL · EDIÇÃO RUA</small></span>
+      </a>
+      <div class="top-center"><span class="live-dot"></span><span id="district-label">VILA AURORA</span><i></i><span id="weather-label">TEMPO LIMPO</span></div>
+      <div class="top-actions">
+        <div class="wallet"><span>R$</span><b id="cash-value">2.450</b><small>CARTEIRA</small></div>
+        <button class="icon-button" id="sound-button" aria-label="Alternar áudio" title="Áudio">♫</button>
+        <button class="icon-button" id="settings-button" aria-label="Configurações" title="Configurações">⚙</button>
+      </div>
+    </header>
+
+    <section class="left-rail">
+      <div class="bike-card glass">
+        <div class="eyebrow"><span class="status-pill">PRONTA</span><span id="bike-class">NAKED · 160 CC</span></div>
+        <h1 id="bike-name">FALCÃO<br><em>160</em></h1>
+        <div class="bike-specs"><span><b id="bike-power">15,1</b><small>CV</small></span><i></i><span><b id="bike-max">128</b><small>KM/H</small></span><i></i><span><b>5</b><small>MARCHAS</small></span></div>
+        <div class="bike-color-row"><span class="color-dot active" data-color="#df493b"></span><span class="color-dot" data-color="#e4c34f"></span><span class="color-dot" data-color="#e9e9df"></span><span class="color-dot" data-color="#497b67"></span><small>PINTURA</small></div>
+      </div>
+      <nav class="side-nav glass" aria-label="Menu do jogo">
+        <button class="nav-item active" data-panel="ride"><span class="nav-icon">◉</span><span>PILOTAR</span></button>
+        <button class="nav-item" data-panel="map"><span class="nav-icon">⌖</span><span>MAPA</span></button>
+        <button class="nav-item" data-panel="garage"><span class="nav-icon">⚒</span><span>OFICINA</span><b class="nav-badge">3</b></button>
+        <button class="nav-item" data-panel="missions"><span class="nav-icon">✦</span><span>DESAFIOS</span></button>
+        <button class="nav-item" data-panel="rider"><span class="nav-icon">♙</span><span>PILOTO</span></button>
+      </nav>
+      <div class="mission-card glass" id="mission-card">
+        <div class="mission-head"><span class="mission-symbol">✦</span><div><small>DESAFIO DO DIA</small><b id="mission-name">GRAU NA AVENIDA</b></div><button id="mission-close" aria-label="Fechar desafio">×</button></div>
+        <p id="mission-description">Mantenha a roda dianteira no alto por 8 segundos.</p>
+        <div class="mission-progress"><div><span id="mission-progress-label">PROGRESSO</span><b id="mission-progress-value">0 / 8 s</b></div><span class="progress-track"><i id="mission-progress-bar"></i></span></div>
+        <button class="mission-cta" id="mission-start">ACEITAR DESAFIO <span>→</span></button>
+      </div>
+    </section>
+
+    <section class="right-rail">
+      <div class="minimap-card glass">
+        <div class="map-top"><span>VILA AURORA</span><span class="map-live">● AO VIVO</span></div>
+        <div class="minimap" id="minimap"><div class="map-grid"></div><svg viewBox="0 0 180 140" aria-hidden="true"><path class="map-road" d="M-10 39 L190 83 M16 -10 L71 150 M137 -10 L107 150 M-5 111 L188 48"/><path class="map-road minor" d="M-3 72 L184 20 M42 -5 L164 144 M-10 130 L185 100"/><path class="map-route" d="M92 70 L123 61 L137 36"/><circle class="map-destination" cx="137" cy="36" r="4"/></svg><span class="player-arrow" id="player-arrow">▲</span><span class="map-compass">N</span></div>
+        <div class="map-bottom"><span><i class="legend-player"></i> VOCÊ</span><span><i class="legend-dest"></i> DESTINO</span><button id="map-expand">ABRIR MAPA ↗</button></div>
+      </div>
+      <div class="weather-card glass"><span class="weather-icon" id="weather-icon">☀</span><div><small>CLIMA</small><b id="weather-name">SOL ENTRE NUVENS</b></div><button id="weather-cycle" title="Mudar clima">↻</button></div>
+      <div class="time-card"><span id="clock-time">16:42</span><small id="time-of-day">FIM DE TARDE</small></div>
+    </section>
+
+    <section class="ride-hud" id="ride-hud">
+      <div class="speed-block"><div class="speed-value"><span id="speed-value">000</span><small>km/h</small></div><div class="speed-caption">VELOCIDADE</div></div>
+      <div class="hud-divider"></div>
+      <div class="rpm-block"><div class="rpm-title"><span>RPM</span><b id="rpm-value">1.2</b></div><div class="rpm-meter"><i id="rpm-fill"></i><span></span><span></span><span></span><span></span><span></span><span></span></div><div class="gear-row"><small>MARCHA</small><b id="gear-value">N</b><span class="fuel-icon">◉</span><small id="fuel-value">82%</small></div></div>
+      <div class="wheelie-meter"><div class="wheelie-meter-label">ÂNGULO <b id="angle-value">0°</b></div><div class="angle-track"><i id="angle-fill"></i><span></span></div><small id="trick-label">EQUILÍBRIO</small></div>
+    </section>
+
+    <div class="toast" id="toast" role="status"></div>
+    <div class="controls-hint" id="controls-hint"><span>WASD</span> PILOTAR <i>·</i> <span>ESPAÇO</span> GRAU <i>·</i> <span>C</span> CÂMERA</div>
+    <div class="touch-controls" id="touch-controls">
+      <div class="touch-left"><button class="touch-stick" id="steer-left"><span>‹</span></button><button class="touch-stick" id="steer-right"><span>›</span></button><button class="touch-action clutch" data-hold="clutch">EMB.</button></div>
+      <div class="touch-right"><button class="touch-action brake" data-hold="brake">FREIO</button><button class="touch-action wheelie" data-hold="wheelie">GRAU</button><button class="touch-action throttle" data-hold="throttle">ACELERAR</button></div>
+    </div>
+    <div class="mobile-extra"><button id="mobile-camera">CÂMERA</button><button id="mobile-interact">INTERAGIR</button><button id="mobile-gear">MARCHA +</button></div>
+
+    <section class="panel-overlay" id="panel-overlay" aria-hidden="true">
+      <div class="panel-backdrop" id="panel-backdrop"></div>
+      <article class="game-panel glass" id="game-panel">
+        <button class="panel-close" id="panel-close" aria-label="Fechar">×</button>
+        <div id="panel-content"></div>
+      </article>
+    </section>
+    <div class="pause-overlay" id="pause-overlay"><div class="pause-card glass"><span class="pause-mark">GX<span>BR</span></span><small>SESSÃO PAUSADA</small><h2>Respira.<br>Depois acelera.</h2><button id="resume-button">VOLTAR PRA RUA →</button><p>Seu progresso é salvo automaticamente neste dispositivo.</p></div></div>
+  </main>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
